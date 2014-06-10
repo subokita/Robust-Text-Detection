@@ -25,6 +25,7 @@ int main(int argc, const char * argv[])
     
     Mat image = imread( "/Users/saburookita/Personal Projects/RobustTextDetection/TestText.png" );
     
+    /* Quite a handful or params */
     RobustTextParam param;
     param.minMSERArea        = 10;
     param.maxMSERArea        = 2000;
@@ -40,6 +41,7 @@ int main(int argc, const char * argv[])
     param.minSolidity        = 0.4;
     param.maxStdDevMeanRatio = 0.5;
     
+    /* Apply Robust Text Detection */
     RobustTextDetection detector(param);
     pair<Mat, Rect> result = detector.apply( image );
     
@@ -47,16 +49,37 @@ int main(int argc, const char * argv[])
     Mat stroke_width( result.second.height, result.second.width, CV_8UC1, Scalar(0) );
     Mat(result.first, result.second).copyTo( stroke_width);
     
-    imshow("", stroke_width );
-    waitKey();
     
     /* Use Tesseract to try to decipher our image */
     tesseract::TessBaseAPI tesseract_api;
     tesseract_api.Init(NULL, "eng"  );
     tesseract_api.SetImage((uchar*) stroke_width.data, stroke_width.cols, stroke_width.rows, 1, stroke_width.cols);
     
-    char * out = tesseract_api.GetUTF8Text();
-    cout << out << endl;
+    string out = string(tesseract_api.GetUTF8Text());
+
+    /* Split the string by whitespace */
+    vector<string> splitted;
+    istringstream iss( out );
+    copy( istream_iterator<string>(iss), istream_iterator<string>(), back_inserter( splitted ) );
+    
+    /* And draw them on screen */
+    CvFont font = cvFontQt("Helvetica", 24.0, CV_RGB(0, 0, 0) );
+    Point coord = Point( result.second.br().x + 10, result.second.tl().y );
+    for( string& line: splitted ) {
+        addText( image, line, coord, font );
+        coord.y += 25;
+    }
+    
+    rectangle( image, result.second, Scalar(0, 0, 255), 2);
+    
+    /* Append the original and stroke width images together */
+    cvtColor( stroke_width, stroke_width, CV_GRAY2BGR );
+    Mat appended( image.rows, image.cols + stroke_width.cols, CV_8UC3 );
+    image.copyTo( Mat(appended, Rect(0, 0, image.cols, image.rows)) );
+    stroke_width.copyTo( Mat(appended, Rect(image.cols, 0, stroke_width.cols, stroke_width.rows)) );
+    
+    imshow("", appended );
+    waitKey();
     
     return 0;
 }

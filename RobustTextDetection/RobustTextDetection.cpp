@@ -120,6 +120,9 @@ pair<Mat, Rect> RobustTextDetection::apply( Mat& image ) {
     Mat bounding_mask( filtered_stroke_width.size(), CV_8UC1, Scalar(0) );
     Mat( bounding_mask, bounding_rect ) = 255;
     
+    /* Well, add some margin to the bounding rect */
+    bounding_rect = Rect( bounding_rect.tl() - Point(5, 5), bounding_rect.br() + Point(5, 5) );
+    
     /* Well, discard everything outside of the bounding rectangle */
     filtered_stroke_width.copyTo( filtered_stroke_width, bounding_mask );
     
