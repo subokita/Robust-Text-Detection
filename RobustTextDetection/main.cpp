@@ -23,7 +23,7 @@ int main(int argc, const char * argv[])
     namedWindow( "" );
     moveWindow("", 0, 0);
     
-    Mat image = imread( "/Users/saburookita/Desktop/TestText.png" );
+    Mat image = imread( "/Users/saburookita/Personal Projects/RobustTextDetection/TestText.png" );
     
     RobustTextParam param;
     param.minMSERArea        = 10;
@@ -43,12 +43,14 @@ int main(int argc, const char * argv[])
     RobustTextDetection detector(param);
     pair<Mat, Rect> result = detector.apply( image );
     
+    /* Get the region where the candidate text is */
     Mat stroke_width( result.second.height, result.second.width, CV_8UC1, Scalar(0) );
     Mat(result.first, result.second).copyTo( stroke_width);
     
     imshow("", stroke_width );
     waitKey();
     
+    /* Use Tesseract to try to decipher our image */
     tesseract::TessBaseAPI tesseract_api;
     tesseract_api.Init(NULL, "eng"  );
     tesseract_api.SetImage((uchar*) stroke_width.data, stroke_width.cols, stroke_width.rows, 1, stroke_width.cols);
