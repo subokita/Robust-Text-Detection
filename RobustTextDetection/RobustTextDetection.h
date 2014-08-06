@@ -62,6 +62,8 @@ protected:
     vector<Point> convertToCoords( Point& coord, uchar neighbors ) ;
     bitset<8> getNeighborsLessThan( int * curr_ptr, int x, int * prev_ptr, int * next_ptr ) ;
     
+    Rect clamp( Rect& rect, Size size );
+    
 private:
     RobustTextParam param;
 };

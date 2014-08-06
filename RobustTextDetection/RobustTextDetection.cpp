@@ -122,12 +122,34 @@ pair<Mat, Rect> RobustTextDetection::apply( Mat& image ) {
     
     /* Well, add some margin to the bounding rect */
     bounding_rect = Rect( bounding_rect.tl() - Point(5, 5), bounding_rect.br() + Point(5, 5) );
+    bounding_rect = clamp( bounding_rect, image.size() );
+    
     
     /* Well, discard everything outside of the bounding rectangle */
     filtered_stroke_width.copyTo( filtered_stroke_width, bounding_mask );
     
     return pair<Mat, Rect>( filtered_stroke_width, bounding_rect );
 }
+
+
+Rect RobustTextDetection::clamp( Rect& rect, Size size ) {
+    Rect result = rect;
+    
+    if( result.x < 0 )
+        result.x = 0;
+    
+    if( result.x + result.width > size.width )
+        result.width = size.width - result.x;
+    
+    if( result.y < 0 )
+        result.y = 0;
+    
+    if( result.y + result.height > size.height )
+        result.height = size.height - result.y;
+    
+    return result;
+}
+
 
 /**
  * Create a mask out from the MSER components
