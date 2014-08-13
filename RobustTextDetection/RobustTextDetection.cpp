@@ -77,7 +77,7 @@ pair<Mat, Rect> RobustTextDetection::apply( Mat& image ) {
     
     Mat filtered_stroke_width( stroke_width.size(), CV_8UC1, Scalar(0) );
     
-    for( ComponentProperty prop: props ) {
+    for( ComponentProperty& prop: props ) {
         Mat mask = labels == prop.labelID;
         Mat temp;
         stroke_width.copyTo( temp, mask );
