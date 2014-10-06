@@ -42,7 +42,9 @@ int main(int argc, const char * argv[])
     param.maxStdDevMeanRatio = 0.5;
     
     /* Apply Robust Text Detection */
-    RobustTextDetection detector(param);
+    /* ... remove this temp output path if you don't want it to write temp image files */
+    string temp_output_path = "/Users/saburookita/Personal Projects/RobustTextDetection/";
+    RobustTextDetection detector(param, temp_output_path );
     pair<Mat, Rect> result = detector.apply( image );
     
     /* Get the region where the candidate text is */

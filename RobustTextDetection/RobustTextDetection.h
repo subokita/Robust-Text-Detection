@@ -44,8 +44,8 @@ struct RobustTextParam {
  */
 class RobustTextDetection {
 public:
-    RobustTextDetection();
-    RobustTextDetection( RobustTextParam& param );
+    RobustTextDetection( string temp_img_directory = "" );
+    RobustTextDetection( RobustTextParam& param, string temp_img_directory = "" );
     
     pair<Mat, Rect> apply( Mat& image );
     
@@ -65,6 +65,7 @@ protected:
     Rect clamp( Rect& rect, Size size );
     
 private:
+    string tempImageDirectory;
     RobustTextParam param;
 };
 

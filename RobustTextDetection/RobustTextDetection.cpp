@@ -14,11 +14,12 @@
 using namespace std;
 using namespace cv;
 
-RobustTextDetection::RobustTextDetection() {
+RobustTextDetection::RobustTextDetection(string temp_img_directory) {
 }
 
-RobustTextDetection::RobustTextDetection(RobustTextParam & param) {
-    this->param = param;
+RobustTextDetection::RobustTextDetection(RobustTextParam & param, string temp_img_directory) {
+    this->param                 = param;
+    this->tempImageDirectory    = temp_img_directory;
 }
 
 /**
@@ -40,6 +41,17 @@ pair<Mat, Rect> RobustTextDetection::apply( Mat& image ) {
     Mat edge_mser_intersection  = edges & mser_mask;
     Mat gradient_grown          = growEdges( grey, edge_mser_intersection );
     Mat edge_enhanced_mser      = ~gradient_grown & mser_mask;
+    
+    /* Writing temporary output images */
+    if( !tempImageDirectory.empty() ) {
+        cout << "Writing temp output images" << endl;
+        imwrite( tempImageDirectory + "/out_grey.png",                   grey );
+        imwrite( tempImageDirectory + "/out_mser_mask.png",              mser_mask );
+        imwrite( tempImageDirectory + "/out_canny_edges.png",            edges );
+        imwrite( tempImageDirectory + "/out_edge_mser_intersection.png", edge_mser_intersection );
+        imwrite( tempImageDirectory + "/out_gradient_grown.png",         gradient_grown );
+        imwrite( tempImageDirectory + "/out_edge_enhanced_mser.png",     edge_enhanced_mser );
+    }
     
     /* Find the connected components */
     ConnectedComponent conn_comp( param.maxConnCompCount, 4);
